@@ -8,8 +8,16 @@ import (
 	"github.com/hudsn/learn-interpreter/lexer"
 )
 
+func TestIntegerLiteralExpression(t *testing.T) {
+	input := "5;"
+	lexer := lexer.New(input)
+	p := New(lexer)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+}
+
 func TestIdentifierExpression(t *testing.T) {
-	input := "foober;"
+	input := "foobar;"
 	lexer := lexer.New(input)
 	p := New(lexer)
 	program := p.ParseProgram()

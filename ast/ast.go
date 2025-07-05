@@ -43,6 +43,8 @@ func (p *Program) String() string {
 	return out.String()
 }
 
+// IDENT
+
 type Identifier struct {
 	Token token.Token
 	Value string
