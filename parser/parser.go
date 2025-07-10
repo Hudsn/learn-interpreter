@@ -149,6 +149,31 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	return leftExp
 }
 
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	expression := &ast.PrefixExpression{Token: p.curToken, Operator: p.curToken.Literal}
+
+	p.nextToken()
+
+	expression.Right = p.parseExpression(PREFIX)
+
+	return expression
+}
+
+func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
+	expression := &ast.InfixExpression{
+		Left:     left,
+		Token:    p.curToken,
+		Operator: p.curToken.Literal,
+	}
+
+	precedence := p.curPrecedence()
+	p.nextToken()
+
+	expression.Right = p.parseExpression(precedence)
+
+	return expression
+}
+
 func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 }
@@ -200,31 +225,6 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	lit.Value = value
 
 	return lit
-}
-
-func (p *Parser) parsePrefixExpression() ast.Expression {
-	expression := &ast.PrefixExpression{Token: p.curToken, Operator: p.curToken.Literal}
-
-	p.nextToken()
-
-	expression.Right = p.parseExpression(PREFIX)
-
-	return expression
-}
-
-func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
-	expression := &ast.InfixExpression{
-		Left:     left,
-		Token:    p.curToken,
-		Operator: p.curToken.Literal,
-	}
-
-	precedence := p.curPrecedence()
-	p.nextToken()
-
-	expression.Right = p.parseExpression(precedence)
-
-	return expression
 }
 
 func (p *Parser) noPrefixParseFnError(t token.TokenType) {
