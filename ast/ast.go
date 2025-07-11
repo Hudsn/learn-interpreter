@@ -144,7 +144,7 @@ func (pe *PrefixExpression) String() string {
 }
 
 type InfixExpression struct {
-	token.Token
+	Token    token.Token
 	Left     Expression
 	Operator string
 	Right    Expression
@@ -160,4 +160,17 @@ func (ie *InfixExpression) String() string {
 	out.WriteString(")")
 
 	return out.String()
+}
+
+type Boolean struct {
+	Token token.Token
+	Value bool
+}
+
+func (b *Boolean) expressionNode() {}
+func (b *Boolean) String() string {
+	return b.Token.Literal
+}
+func (b *Boolean) TokenLiteral() string {
+	return b.Token.Literal
 }
