@@ -318,43 +318,6 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 	return args
 }
 
-// func (p *Parser) parseCallExpressionOLD(functionExpr ast.Expression) ast.Expression {
-// 	call := &ast.CallExpression{Token: p.curToken, Function: functionExpr}
-
-// 	if !p.expectPeek(token.LPAREN) {
-// 		return nil
-// 	}
-
-// 	p.nextToken()
-// 	call.Arguments = p.parseFunctionArguments()
-
-// 	return call
-// }
-
-// func (p *Parser) parseFunctionArgumentsOLD() []ast.Expression {
-// 	expressions := []ast.Expression{}
-
-// 	if p.peekTokenIs(token.RPAREN) {
-// 		p.nextToken()
-// 		return expressions
-// 	}
-
-// 	expressions = append(expressions, p.parseExpression(LOWEST))
-
-// 	for p.peekTokenIs(token.COMMA) {
-// 		p.nextToken()
-// 		p.nextToken()
-
-// 		expressions = append(expressions, p.parseExpression(LOWEST))
-// 	}
-
-// 	if !p.expectPeek(token.RPAREN) {
-// 		return nil
-// 	}
-
-// 	return expressions
-// }
-
 func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 }
@@ -371,9 +334,10 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	if !p.expectPeek(token.ASSIGN) {
 		return nil
 	}
-	// TODO: We're skipping the expressions until we
-	// encounter a semicolon
-	for !p.curTokenIs(token.SEMICOLON) {
+	p.nextToken()
+	stmt.Value = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 
@@ -385,8 +349,9 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	p.nextToken()
 
-	// stmt.ReturnValue = asdfasdf
-	for !p.curTokenIs(token.SEMICOLON) {
+	stmt.ReturnValue = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 

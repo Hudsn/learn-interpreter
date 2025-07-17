@@ -558,7 +558,7 @@ func TestReturnStatements(t *testing.T) {
 		checkParserErrors(t, p)
 
 		if len(program.Statements) != 1 {
-			t.Fatalf("program.Statements does not contain 3 statements. got=%d",
+			t.Fatalf("program.Statements does not contain 1 statement. got=%d",
 				len(program.Statements))
 		}
 
@@ -570,6 +570,10 @@ func TestReturnStatements(t *testing.T) {
 			}
 			if returnStmt.TokenLiteral() != "return" {
 				t.Errorf("returnStmt.TokenLiteral not 'return', got %q", returnStmt.TokenLiteral())
+			}
+
+			if !testLiteralExpression(t, returnStmt.ReturnValue, tt.expectedValue) {
+				return
 			}
 		}
 	}
