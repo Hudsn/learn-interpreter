@@ -57,9 +57,71 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		env.Set(node.Name.Value, val)
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
+	case *ast.FunctionLiteral:
+		return &object.Function{
+			Environment: env,
+			Parameters:  node.Parameters,
+			Body:        node.Body,
+		}
+	case *ast.CallExpression:
+		function := Eval(node.Function, env)
+		if isError(function) {
+			return function
+		}
+		args := evalExpressions(node.Arguments, env)
+		if len(args) == 1 && isError(args[0]) {
+			return args[0]
+		}
+		return applyFunction(function, args)
 	}
 
 	return nil
+}
+
+func applyFunction(obj object.Object, args []object.Object) object.Object {
+	fn, ok := obj.(*object.Function)
+	if !ok {
+		return newError("cannot call non-function object as a function: %s", obj.Type())
+	}
+
+	if len(fn.Parameters) != len(args) {
+		return newError("cannot call function %s:\n\tmismatched number of arguments and parameters: args=%d, params=%d", fn.Inspect(), len(args), len(fn.Parameters))
+	}
+
+	closureEnv := extendFunctionEnv(fn, args)
+
+	blockEval := Eval(fn.Body, closureEnv)
+	return unWrapReturnValue(blockEval)
+}
+
+func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Environment {
+	env := object.NewEnclosedEnvironment(fn.Environment)
+
+	for idx, param := range fn.Parameters {
+		env.Set(param.Value, args[idx])
+	}
+
+	return env
+}
+
+func unWrapReturnValue(obj object.Object) object.Object {
+	if val, ok := obj.(*object.ReturnValue); ok {
+		return val.Value
+	}
+	return obj
+}
+
+func evalExpressions(expressions []ast.Expression, env *object.Environment) []object.Object {
+	objects := []object.Object{}
+
+	for _, exp := range expressions {
+		evaluated := Eval(exp, env)
+		if isError(evaluated) {
+			return []object.Object{evaluated}
+		}
+		objects = append(objects, evaluated)
+	}
+	return objects
 }
 
 func evalIdentifier(ident *ast.Identifier, env *object.Environment) object.Object {
