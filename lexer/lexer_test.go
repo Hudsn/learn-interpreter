@@ -25,7 +25,12 @@ if (5 < 10) {
 }
 
 10 == 10;
-10 != 9;`
+10 != 9;
+"foobar"
+"foo bar"
+"new\"line"
+"new\n\n\tline\""
+`
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -106,6 +111,10 @@ if (5 < 10) {
 		{token.NOT_EQ, "!="},
 		{token.INT, "9"},
 		{token.SEMICOLON, ";"},
+		{token.STRING, "foobar"},
+		{token.STRING, "foo bar"},
+		{token.STRING, "new\"line"},
+		{token.STRING, "new\n\n\tline\""},
 		{token.EOF, ""},
 	}
 

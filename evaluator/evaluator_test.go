@@ -8,6 +8,32 @@ import (
 	"github.com/hudsn/learn-interpreter/parser"
 )
 
+func TestStringConcatenation(t *testing.T) {
+	input := `"Hello" + " " + "World!"`
+	evaluated := testEval(input)
+	testStringObject(t, evaluated, "Hello World!")
+}
+
+func TestString(t *testing.T) {
+	input := `"hello world"`
+
+	testStringObject(t, testEval(input), "hello world")
+
+}
+
+func testStringObject(t *testing.T, obj object.Object, expected string) bool {
+	strLit, ok := obj.(*object.String)
+	if !ok {
+		t.Errorf("expected obj to be of type *object.String. got=%T", obj)
+		return false
+	}
+	if strLit.Value != expected {
+		t.Errorf("expected Value to be %q. got=%q", expected, strLit.Value)
+		return false
+	}
+	return true
+}
+
 func TestClosures(t *testing.T) {
 	input := `
 		let newAdder = fn(x){
@@ -118,6 +144,10 @@ func TestErrorHandling(t *testing.T) {
 				return 1;
 			}`,
 			"unknown operator: BOOLEAN + BOOLEAN",
+		},
+		{
+			`"Hello" - "world"`,
+			"unknown operator: STRING - STRING",
 		},
 		{
 			"foobar",
