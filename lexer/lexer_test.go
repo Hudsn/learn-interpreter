@@ -30,6 +30,8 @@ if (5 < 10) {
 "foo bar"
 "new\"line"
 "new\n\n\tline\""
+array[]
+[1, 2];
 `
 
 	tests := []struct {
@@ -115,6 +117,15 @@ if (5 < 10) {
 		{token.STRING, "foo bar"},
 		{token.STRING, "new\"line"},
 		{token.STRING, "new\n\n\tline\""},
+		{token.IDENT, "array"},
+		{token.LBRACKET, "["},
+		{token.RBRACKET, "]"},
+		{token.LBRACKET, "["},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.RBRACKET, "]"},
+		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
 

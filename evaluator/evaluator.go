@@ -81,19 +81,17 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 }
 
 func applyFunction(obj object.Object, args []object.Object) object.Object {
-	fn, ok := obj.(*object.Function)
-	if !ok {
+
+	switch fn := obj.(type) {
+	case *object.Function:
+		extendedEnv := extendFunctionEnv(fn, args)
+		evaluated := Eval(fn.Body, extendedEnv)
+		return unWrapReturnValue(evaluated)
+	case *object.Builtin:
+		return fn.Fn(args...)
+	default:
 		return newError("cannot call non-function object as a function: %s", obj.Type())
 	}
-
-	if len(fn.Parameters) != len(args) {
-		return newError("cannot call function %s:\n\tmismatched number of arguments and parameters: args=%d, params=%d", fn.Inspect(), len(args), len(fn.Parameters))
-	}
-
-	closureEnv := extendFunctionEnv(fn, args)
-
-	blockEval := Eval(fn.Body, closureEnv)
-	return unWrapReturnValue(blockEval)
 }
 
 func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Environment {
@@ -130,6 +128,11 @@ func evalIdentifier(ident *ast.Identifier, env *object.Environment) object.Objec
 	if obj, ok := env.Get(ident.Value); ok {
 		return obj
 	}
+
+	if builtin, ok := builtins[ident.Value]; ok {
+		return builtin
+	}
+
 	return newError("identifier not found: %s", ident.Value)
 }
 

@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 
 	"github.com/hudsn/learn-interpreter/token"
@@ -277,3 +278,22 @@ func (sl *StringLiteral) TokenLiteral() string {
 	return sl.Token.Literal
 }
 func (sl *StringLiteral) String() string { return sl.Token.Literal }
+
+type ArrayLiteral struct {
+	Token    token.Token
+	Elements []Expression
+}
+
+func (al *ArrayLiteral) expressionNode() {}
+func (al *ArrayLiteral) String() string {
+	var contents []string
+
+	for _, entry := range al.Elements {
+		contents = append(contents, entry.String())
+	}
+
+	return fmt.Sprintf("[%s]", strings.Join(contents, ", "))
+}
+func (al *ArrayLiteral) TokenLiteral() string {
+	return al.Token.Literal
+}

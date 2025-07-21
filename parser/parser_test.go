@@ -9,6 +9,41 @@ import (
 	"github.com/hudsn/learn-interpreter/lexer"
 )
 
+func TestArrayLiteralExpression(t *testing.T) {
+	input := "[1, 2 * 2, 3 + 3]"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain %d statements. got=%d\n",
+			1, len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("stmt is not ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+
+	array, ok := stmt.Expression.(*ast.ArrayLiteral)
+	if !ok {
+		t.Fatalf("stmt.Expression is not array. got=%T", stmt.Expression)
+	}
+	if len(array.Elements) != 3 {
+		t.Errorf("length of array is wrong. expected=%d, got=%d", 3, len(array.Elements))
+	}
+	if array.String() != "[1, (2 * 2), (3 + 3)]" {
+		t.Errorf("array has incorrect value. expected=%s, got=%s", "[1, (2 * 2), (3 + 3)]", array.String())
+	}
+
+	testIntegerLiteral(t, array.Elements[0], 1)
+	testInfixExpression(t, array.Elements[1], 2, "*", 2)
+	testInfixExpression(t, array.Elements[2], 3, "+", 3)
+}
+
 func TestStringLiteralExpression(t *testing.T) {
 	input := `"hello world"`
 
