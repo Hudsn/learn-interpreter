@@ -297,3 +297,29 @@ func (al *ArrayLiteral) String() string {
 func (al *ArrayLiteral) TokenLiteral() string {
 	return al.Token.Literal
 }
+
+type IndexExpression struct {
+	Token token.Token
+	Left  Expression
+	Index Expression
+}
+
+func (ie *IndexExpression) expressionNode()      {}
+func (ie *IndexExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *IndexExpression) String() string {
+	return fmt.Sprintf("(%s[%s])", ie.Left.String(), ie.Index.String())
+}
+
+type ArrayExpression struct {
+	Token   token.Token
+	Array   Expression
+	GetPath Expression
+}
+
+func (ae *ArrayExpression) expressionNode() {}
+func (ae *ArrayExpression) TokenLiteral() string {
+	return ae.Token.Literal
+}
+func (ae *ArrayExpression) String() string {
+	return ae.Array.String()
+}

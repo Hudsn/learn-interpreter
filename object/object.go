@@ -24,6 +24,7 @@ const (
 	FUNCTION_OBJ     = "FUNCTION"
 	STRING_OBJ       = "STRING"
 	BUILTIN_OBJ      = "BUILTIN"
+	ARRAY_OBJ        = "ARRAYH"
 )
 
 type Integer struct {
@@ -128,4 +129,21 @@ func (b *Builtin) Inspect() string {
 }
 func (b *Builtin) Type() ObjectType {
 	return BUILTIN_OBJ
+}
+
+type Array struct {
+	Elements []Object
+}
+
+func (a *Array) Inspect() string {
+	elStrings := []string{}
+	for _, entry := range a.Elements {
+		elStrings = append(elStrings, entry.Inspect())
+	}
+
+	return fmt.Sprintf("[%s]", strings.Join(elStrings, ", "))
+}
+
+func (a *Array) Type() ObjectType {
+	return ARRAY_OBJ
 }
