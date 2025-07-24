@@ -323,3 +323,23 @@ func (ae *ArrayExpression) TokenLiteral() string {
 func (ae *ArrayExpression) String() string {
 	return ae.Array.String()
 }
+
+type HashLiteral struct {
+	Token token.Token
+	Pairs map[Expression]Expression
+}
+
+func (hl *HashLiteral) expressionNode() {}
+
+func (hl *HashLiteral) TokenLiteral() string {
+	return hl.Token.Literal
+}
+func (hl *HashLiteral) String() string {
+	pairStrings := []string{}
+	for key, val := range hl.Pairs {
+		msg := fmt.Sprintf("%s: %s", key.String(), val.String())
+		pairStrings = append(pairStrings, msg)
+	}
+
+	return fmt.Sprintf("{%s}", strings.Join(pairStrings, ", "))
+}

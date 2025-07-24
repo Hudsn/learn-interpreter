@@ -32,6 +32,7 @@ if (5 < 10) {
 "new\n\n\tline\""
 array[]
 [1, 2];
+{"foo": bar};
 `
 
 	tests := []struct {
@@ -125,6 +126,12 @@ array[]
 		{token.COMMA, ","},
 		{token.INT, "2"},
 		{token.RBRACKET, "]"},
+		{token.SEMICOLON, ";"},
+		{token.LBRACE, "{"},
+		{token.STRING, "foo"},
+		{token.COLON, ":"},
+		{token.IDENT, "bar"},
+		{token.RBRACE, "}"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
